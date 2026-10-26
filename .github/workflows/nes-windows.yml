@@ -332,9 +332,12 @@ jobs:
         if: env.UPLOAD_ARTIFACT == 'true'
         run: |
           sed -i '/dpiAware/d' res/manifest.xml
+          # El instalador conserva el nombre del .exe de origen, pero el servicio, los accesos directos y el registro apuntan a
+          # <nombre de la app>.exe: el programa principal tiene que llamarse NesDesk.exe antes de empaquetar.
+          mv ./rustdesk/rustdesk.exe ./rustdesk/NesDesk.exe
           pushd ./libs/portable
           pip3 install -r requirements.txt
-          python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/rustdesk.exe
+          python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/NesDesk.exe
           popd
           mkdir -p ./SignOutput
           mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/NesDesk-${{ env.VERSION }}-${{ matrix.job.arch }}.exe
